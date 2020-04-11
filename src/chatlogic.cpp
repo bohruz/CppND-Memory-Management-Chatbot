@@ -156,46 +156,48 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename) {
       file.close();
 
     }  // eof check for file availability
-    else {
-      std::cout << "File could not be opened!" << std::endl;
-      return;
-    }
+  }
 
-    // identify root node
-    GraphNode *rootNode = nullptr;
-    for (auto it = std::begin(_nodes); it != std::end(_nodes); ++it) {
-      // search for nodes which have no incoming edges
-      if ((*it)->GetNumberOfParents() == 0) {
-        if (rootNode == nullptr) {
-          rootNode = it->get();  // assign current node to root
-        } else {
-          std::cout << "ERROR : Multiple root nodes detected" << std::endl;
-        }
+  else {
+    std::cout << "File could not be opened!" << std::endl;
+    return;
+  }
+
+  // identify root node
+  GraphNode *rootNode = nullptr;
+  for (auto it = std::begin(_nodes); it != std::end(_nodes); ++it) {
+    // search for nodes which have no incoming edges
+    if ((*it)->GetNumberOfParents() == 0) {
+      if (rootNode == nullptr) {
+        rootNode = it->get();  // assign current node to root
+      } else {
+        std::cout << "ERROR : Multiple root nodes detected" << std::endl;
       }
     }
-
-    ChatBot chatbot = ChatBot("../images/chatbot.png");
-    chatbot.SetChatLogicHandle(this);
-    chatbot.SetRootNode(rootNode);
-
-    // add chatbot to graph root node
-    rootNode->MoveChatbotHere(std::move(chatbot));
   }
 
-  void ChatLogic::SetPanelDialogHandle(ChatBotPanelDialog * panelDialog) {
-    _panelDialog = panelDialog;
-  }
+  ChatBot chatbot = ChatBot("../images/chatbot.png");
+  chatbot.SetChatLogicHandle(this);
+  chatbot.SetRootNode(rootNode);
 
-  void ChatLogic::SetChatbotHandle(ChatBot * chatbot) { _chatBot = chatbot; }
+  // add chatbot to graph root node
+  rootNode->MoveChatbotHere(std::move(chatbot));
+}
 
-  void ChatLogic::SendMessageToChatbot(std::string message) {
-    _chatBot->ReceiveMessageFromUser(message);
-  }
+void ChatLogic::SetPanelDialogHandle(ChatBotPanelDialog *panelDialog) {
+  _panelDialog = panelDialog;
+}
 
-  void ChatLogic::SendMessageToUser(std::string message) {
-    _panelDialog->PrintChatbotResponse(message);
-  }
+void ChatLogic::SetChatbotHandle(ChatBot *chatbot) { _chatBot = chatbot; }
 
-  wxBitmap *ChatLogic::GetImageFromChatbot() {
-    return _chatBot->GetImageHandle();
-  }
+void ChatLogic::SendMessageToChatbot(std::string message) {
+  _chatBot->ReceiveMessageFromUser(message);
+}
+
+void ChatLogic::SendMessageToUser(std::string message) {
+  _panelDialog->PrintChatbotResponse(message);
+}
+
+wxBitmap *ChatLogic::GetImageFromChatbot() {
+  return _chatBot->GetImageHandle();
+}
